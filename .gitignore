@@ -3,6 +3,8 @@ libschrift.a
 /demo
 /stress
 schrift-*.tar.gz
+Makefile
+*.make
 
 .vs/
 *.vcxproj.user
