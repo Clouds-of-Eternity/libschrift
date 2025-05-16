@@ -290,6 +290,59 @@ sft_gmetrics(const SFT *sft, SFT_Glyph glyph, SFT_GMetrics *metrics)
 	return 0;
 }
 
+int sft_lookup_ligature(const SFT *sft, SFT_UChar codepoint1, SFT_UChar codepoint2, SFT_Glyph *glyph)
+{
+	uint_fast32_t offset;
+	if (gettable(sft->font, "GSUB", &offset) < 0)
+		return -1;
+
+	uint_fast32_t gsubOffset = offset;
+
+	uint_least16_t majorVersion = getu16(sft->font, offset);
+	uint_least16_t minorVersion = getu16(sft->font, offset + 2);
+	offset += 4;
+	
+	uint_least16_t scriptListOffset = getu16(sft->font, offset);
+	uint_least16_t featureListOffset = getu16(sft->font, offset + 2);
+	uint_least16_t lookupListOffset = getu16(sft->font, offset + 4);
+	offset += 6;
+
+	if (minorVersion == 1)
+	{
+		uint_least32_t featureVariationsOffset = getu32(sft->font, offset);
+		offset += 2;
+	}
+
+	offset = gsubOffset + lookupListOffset;
+
+	uint_least16_t lookupCount = getu16(sft->font, offset);
+	for (uint_least16_t i = 0; i < lookupCount; i++)
+	{
+		uint_least16_t lookupTableStart = offset + getu16(sft->font, offset + (i + 1) * 2);
+
+
+		uint_least16_t lookupType = getu16(sft->font, lookupTableStart);
+		uint_least16_t lookupFlags = getu16(sft->font, lookupTableStart + 2);
+		uint_least16_t subTableCount = getu16(sft->font, lookupTableStart + 4);
+
+		
+	}
+
+	// uint_least16_t lookupType = getu16(sft->font, offset);
+	// uint_least16_t lookupFlags = getu16(sft->font, offset + 2);
+
+	// uint_least16_t subTableCount = getu16(sft->font, offset + 4);
+	// offset += 6;
+	// for (uint_least16_t i = 0; i < subTableCount; i++)
+	// {
+	// 	uint_least16_t subTableOffset = getu16(sft->font, offset + i * 2);
+	// 	uint_fast32_t subTableStart = gsubOffset + lookupListOffset + subTableOffset;
+
+	// }
+
+	return 1;
+}
+
 int
 sft_kerning(const SFT *sft, SFT_Glyph leftGlyph, SFT_Glyph rightGlyph,
             SFT_Kerning *kerning)
