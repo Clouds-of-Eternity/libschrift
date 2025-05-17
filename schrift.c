@@ -431,13 +431,13 @@ sft_render(const SFT *sft, SFT_Glyph glyph, SFT_Image image)
 	transform[0] = sft->xScale / sft->font->unitsPerEm;
 	transform[1] = 0.0;
 	transform[2] = 0.0;
-	transform[4] = sft->xOffset - bbox[0];
+	transform[4] = transform[0] * sft->xOffset - bbox[0];
 	if (sft->flags & SFT_DOWNWARD_Y) {
 		transform[3] = -sft->yScale / sft->font->unitsPerEm;
-		transform[5] = bbox[3] - sft->yOffset;
+		transform[5] = bbox[3] - transform[3] * sft->yOffset;
 	} else {
 		transform[3] = +sft->yScale / sft->font->unitsPerEm;
-		transform[5] = sft->yOffset - bbox[1];
+		transform[5] = transform[3] * sft->yOffset - bbox[1];
 	}
 	
 	memset(&outl, 0, sizeof outl);
