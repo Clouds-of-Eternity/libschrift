@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "msdfgen-c.h"
+
 #if defined(_MSC_VER)
 # define restrict __restrict
 #endif
@@ -446,6 +448,69 @@ sft_render(const SFT *sft, SFT_Glyph glyph, SFT_Image image)
 		goto failure;
 	if (render_outline(&outl, transform, image) < 0)
 		goto failure;
+
+	free_outline(&outl);
+	return 0;
+
+failure:
+	free_outline(&outl);
+	return -1;
+}
+
+int
+sft_render_msdf(const SFT *sft, SFT_Glyph glyph, SFT_Image image)
+{
+	uint_fast32_t outline;
+	int bbox[4];
+	Outline outl;
+
+	if (outline_offset(sft->font, glyph, &outline) < 0)
+		return -1;
+	if (!outline)
+		return 0;
+	if (glyph_bbox(sft, outline, bbox) < 0)
+		return -1;
+	/* Set up the transformation matrix such that
+	 * the transformed bounding boxes min corner lines
+	 * up with the (0, 0) point. */
+	MsdfTransformation transformation = {0};
+	transformation.scaleX = sft->xScale / sft->font->unitsPerEm;
+	transformation.scaleY = sft->xOffset - bbox[0];
+	if (sft->flags & SFT_DOWNWARD_Y) {
+		transformation.scaleY = -sft->yScale / sft->font->unitsPerEm;
+		transformation.translateY = bbox[3] - sft->yOffset;
+	} else {
+		transformation.scaleY = +sft->yScale / sft->font->unitsPerEm;
+		transformation.translateY = sft->yOffset - bbox[1];
+	}
+	
+	memset(&outl, 0, sizeof outl);
+	if (init_outline(&outl) < 0)
+		goto failure;
+
+	if (decode_outline(sft->font, outline, 0, &outl) < 0)
+		goto failure;
+
+	//render msdf
+
+	MsdfShapeCreateInfo shapeCreateInfo = {0};
+	shapeCreateInfo.curves = outl.curves;
+	shapeCreateInfo.lines = outl.lines;
+	shapeCreateInfo.points = outl.points;
+	shapeCreateInfo.numCurves = outl.numCurves;
+	shapeCreateInfo.numLines = outl.numLines;
+	shapeCreateInfo.numPoints = outl.numPoints;
+	MsdfShape shape = MsdfCreateShape(&shapeCreateInfo);
+	MsdfEdgeColoringSimple(shape);
+
+	MsdfBitmapRef bitmapRef;
+	bitmapRef.data = image.pixels;
+	bitmapRef.width = image.width;
+	bitmapRef.height = image.height;
+	MsdfGenerate(&bitmapRef, shape, transformation);
+
+	MsdfFreeShape(shape);
+	//end render msdf
 
 	free_outline(&outl);
 	return 0;

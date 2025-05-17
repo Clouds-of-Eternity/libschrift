@@ -87,6 +87,7 @@ int sft_gmetrics(const SFT *sft, SFT_Glyph glyph, SFT_GMetrics *metrics);
 int sft_kerning (const SFT *sft, SFT_Glyph leftGlyph, SFT_Glyph rightGlyph,
                  SFT_Kerning *kerning);
 int sft_render  (const SFT *sft, SFT_Glyph glyph, SFT_Image image);
+int sft_render_msdf(const SFT *sft, SFT_Glyph glyph, SFT_Image image);
 
 #ifdef __cplusplus
 }
