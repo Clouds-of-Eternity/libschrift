@@ -84,6 +84,8 @@ int sft_lmetrics(const SFT *sft, SFT_LMetrics *metrics);
 int sft_lookup  (const SFT *sft, SFT_UChar codepoint, SFT_Glyph *glyph);
 int sft_lookup_ligature(const SFT *sft, SFT_UChar codepoint1, SFT_UChar codepoint2, SFT_Glyph *glyph);
 int sft_gmetrics(const SFT *sft, SFT_Glyph glyph, SFT_GMetrics *metrics);
+int sft_gpos (const SFT *sft, SFT_Glyph leftGlyph, SFT_Glyph rightGlyph,
+                 SFT_Kerning *kerning);
 int sft_kerning (const SFT *sft, SFT_Glyph leftGlyph, SFT_Glyph rightGlyph,
                  SFT_Kerning *kerning);
 int sft_render  (const SFT *sft, SFT_Glyph glyph, SFT_Image image);
