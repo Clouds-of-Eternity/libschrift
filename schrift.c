@@ -616,9 +616,9 @@ int sft_render_msdf(const SFT *sft, SFT_Glyph glyph, SFT_Image image)
 	// render msdf
 
 	MsdfShapeCreateInfo shapeCreateInfo = {0};
-	shapeCreateInfo.curves = outl.curves;
-	shapeCreateInfo.lines = outl.lines;
-	shapeCreateInfo.points = outl.points;
+	shapeCreateInfo.curves = (MsdfCurve *)outl.curves;
+	shapeCreateInfo.lines = (MsdfLine *)outl.lines;
+	shapeCreateInfo.points = (MsdfPoint *)outl.points;
 	shapeCreateInfo.numCurves = outl.numCurves;
 	shapeCreateInfo.numLines = outl.numLines;
 	shapeCreateInfo.numPoints = outl.numPoints;
