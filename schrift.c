@@ -594,7 +594,7 @@ int sft_render_msdf(const SFT *sft, SFT_Glyph glyph, SFT_Image image)
 	 * up with the (0, 0) point. */
 	MsdfTransformation transformation = {0};
 	transformation.scaleX = sft->xScale / sft->font->unitsPerEm;
-	transformation.scaleY = sft->xOffset - bbox[0];
+	transformation.translateX = sft->xOffset - bbox[0];
 	if (sft->flags & SFT_DOWNWARD_Y)
 	{
 		transformation.scaleY = -sft->yScale / sft->font->unitsPerEm;
